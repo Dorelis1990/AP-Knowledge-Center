@@ -1,0 +1,29 @@
+<!-- Bootstrap core JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core theme JS -->
+<script src="/js/scripts.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const filterSelect = document.getElementById("filterType");
+    const documentItems = document.querySelectorAll(".document-item");
+
+    if (filterSelect) {
+      filterSelect.addEventListener("change", function () {
+        const selected = this.value.toLowerCase();
+        documentItems.forEach(item => {
+          const type = item.getAttribute("data-type").toLowerCase();
+          if (selected === "all" || type === selected) {
+            item.style.display = "block";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      });
+    }
+
+    // No JS form submit interception here, so form submits normally
+    // You can add more JS here if needed in future
+  });
+</script>

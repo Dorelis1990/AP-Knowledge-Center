@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("layouts/header") %>
+
+  <body>
+    <%- include("layouts/navbar", { user: user, loggedIn: loggedIn }) %>
+
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+      <script>
+        alert("<%= errorMessage %>");
+      </script>
+    <% } %>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('/img/home-bg.jpg')">
+      <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="site-heading">
+              <h1><%= blogPost.title %></h1>
+              <span class="subheading">Detailed Post View</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <article>
+            <p class="post-meta">
+              Posted by 
+              <% if (blogPost.user && blogPost.user.username) { %>
+                <a href="#!"><%= blogPost.user.username %></a>
+              <% } else { %>
+                <em>Unknown</em>
+              <% } %>
+              on <%= blogPost.datePosted.toDateString() %>
+            </p>
+
+            <div class="mb-5">
+              <%- blogPost.body %>
+            </div>
+          </article>
+
+          <% if (loggedIn) { %>
+            <div class="d-flex justify-content-start mt-4">
+              <a href="/post/edit/<%= blogPost._id %>" class="btn btn-warning me-2">Edit</a>
+              <form action="/post/delete/<%= blogPost._id %>" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+
+    <%- include("layouts/footer") %>
+    <%- include("layouts/scripts") %>
+  </body>
+</html>

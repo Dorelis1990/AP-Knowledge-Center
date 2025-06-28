@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("layouts/header") %>
+
+  <body>
+    <%- include("layouts/navbar") %>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('/img/Compass_Marketing.jpg')">
+      <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="site-heading">
+              <h1>Test Your Knowledge</h1>
+              <span class="subheading">Answer all questions and submit</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Quiz Form -->
+    <div class="container px-4 px-lg-5 mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <% if (quiz && quiz.questions && quiz.questions.length > 0) { %>
+            <form action="/quiz/submit" method="POST">
+              <% quiz.questions.forEach((question, qIndex) => { %>
+                <div class="mb-5">
+                  <p><strong>Question <%= qIndex + 1 %>:</strong> <%= question.text %></p>
+                  <% question.answers.forEach((answer, aIndex) => { %>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="answers[<%= qIndex %>]"
+                        id="q<%= qIndex %>a<%= aIndex %>"
+                        value="<%= aIndex %>"
+                        required
+                      />
+                      <label class="form-check-label" for="q<%= qIndex %>a<%= aIndex %>">
+                        <%= answer %>
+                      </label>
+                    </div>
+                  <% }) %>
+                </div>
+              <% }) %>
+
+              <button type="submit" class="btn btn-primary">Submit Quiz</button>
+            </form>
+
+            <% if (loggedIn) { %>
+              <form action="/quiz/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete the quiz? This will not delete quiz results.')">
+                <button type="submit" class="btn btn-danger mt-3">Delete Quiz</button>
+              </form>
+            <% } %>
+
+          <% } else { %>
+            <p>No quiz is currently available.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <%- include("layouts/footer") %>
+    <%- include("layouts/scripts") %>
+  </body>
+</html>

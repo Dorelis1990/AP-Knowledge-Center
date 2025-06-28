@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("layouts/header") %>
+  <body>
+    <%- include("layouts/navbar") %>
+
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+      <script>
+        alert("<%= errorMessage %>");
+      </script>
+    <% } %>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('/img/Compass_Marketing.jpg')">
+      <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="site-heading">
+              <h1>AP Knowledge Center</h1>
+              <span class="subheading">All the Tools You Need to Succeed in AP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <% if (loggedIn) { %>
+      <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <!-- Main Column -->
+          <div class="col-lg-8">
+            <!-- Search Bar -->
+            <form action="/search" method="GET" class="mb-4">
+              <div class="input-group">
+                <input 
+                  type="text"
+                  name="query"
+                  class="form-control py-2"
+                  placeholder="Search posts..."
+                  value="<%= typeof query !== 'undefined' ? query : '' %>"
+                />
+                <button class="btn btn-primary py-2" type="submit">Search</button>
+              </div>
+            </form>
+
+            <!-- Posts -->
+            <% blogPost.forEach(post => { %>
+              <div class="post-preview">
+                <a href="/post/<%= post._id %>">
+                  <h2 class="post-title"><%= post.title %></h2>
+                  <h3 class="post-subtitle">
+                    <%= post.body.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 100) + "..." %>
+                  </h3>
+                </a>
+                <p class="post-meta">
+                  Posted by 
+                  <% if (post.user && post.user.username) { %>
+                    <a href="#!"><%= post.user.username %></a>
+                  <% } else { %>
+                    <em>Unknown</em>
+                  <% } %>
+                  on <%= post.datePosted.toDateString() %>
+                </p>
+
+                <!-- Edit/Delete for All Logged-in Users -->
+                <div class="mt-2 mb-4">
+                  <a href="/post/edit/<%= post._id %>" class="btn btn-sm btn-warning me-2">Edit</a>
+                  <form action="/post/delete/<%= post._id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+              <hr class="my-4" />
+            <% }) %>
+          </div>
+
+          <!-- Sidebar Column -->
+          <div class="col-lg-4">
+            <% if (typeof latestResult !== 'undefined' && latestResult && latestResult.user && latestResult.user._id.toString() === loggedIn.toString()) { %>
+              <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                  Your Latest Quiz Result
+                </div>
+                <div class="card-body">
+                  <p><strong>User:</strong> <%= latestResult.user?.username || "Unknown" %></p>
+                  <p><strong>Score:</strong> <%= latestResult.score %> / <%= latestResult.total %></p>
+                  <p><small><%= new Date(latestResult.createdAt).toLocaleString() %></small></p>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% } else { %>
+      <!-- Guest Message -->
+      <div class="container mt-5 text-center">
+        <div class="alert alert-info py-5 px-4 shadow-sm">
+          <h3>Welcome to the AP Knowledge Center</h3>
+          <p class="lead mt-3">
+            To access study posts, test results, and tools, please 
+            <a href="/auth/login" class="btn btn-primary btn-sm mx-1">Log in</a> 
+            or 
+            <a href="/auth/register" class="btn btn-outline-primary btn-sm mx-1">Register</a>.
+          </p>
+        </div>
+      </div>
+    <% } %>
+
+    <%- include("layouts/footer") %>
+    <%- include("layouts/scripts") %>
+  </body>
+</html>

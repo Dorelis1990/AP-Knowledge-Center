@@ -1,0 +1,28 @@
+{
+  "name": "learning_blog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "install": "^0.13.0",
+    "learning_blog": "file:",
+    "mongoose": "^8.14.3",
+    "multer": "^2.0.0",
+    "nodemailer": "^7.0.3",
+    "npm": "^11.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

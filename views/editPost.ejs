@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("layouts/header") %>
+
+  <body>
+    <%- include("layouts/navbar", { user: user, loggedIn: loggedIn }) %>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('/img/home-bg.jpg')">
+      <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="site-heading">
+              <h1>Edit Your Post</h1>
+              <span class="subheading">Update your content</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <form action="/post/update/<%= post._id %>" method="POST">
+            <div class="mb-3">
+              <label for="title" class="form-label">Post Title</label>
+              <input 
+                type="text" 
+                name="title" 
+                class="form-control" 
+                id="title" 
+                value="<%= post.title %>" 
+                required 
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="body" class="form-label">Post Content</label>
+              <textarea 
+                name="body" 
+                id="body" 
+                class="form-control" 
+                rows="10" 
+                required
+              ><%= post.body %></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Post</button>
+            <a href="/" class="btn btn-secondary ms-2">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <%- include("layouts/footer") %>
+    <%- include("layouts/scripts") %>
+
+    <!-- Summernote Init Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        $('#body').summernote({
+          height: 300,
+          placeholder: 'Edit your post content here...',
+          toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link']],
+            ['view', ['codeview']]
+          ]
+        });
+      });
+    </script>
+  </body>
+</html>

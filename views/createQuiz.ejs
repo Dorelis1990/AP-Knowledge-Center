@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("layouts/header") %>
+  <body>
+    <%- include("layouts/navbar") %>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('/img/home-bg.jpg')">
+      <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="page-heading">
+              <h1>Create a Quiz</h1>
+              <span class="subheading">Add your own questions and answers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mb-4">
+      <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <form action="/quiz/create" method="POST" id="quizForm">
+              <div class="mb-4">
+                <label for="quizTitle" class="form-label">Quiz Title</label>
+                <input type="text" class="form-control" id="quizTitle" name="title" required />
+              </div>
+
+              <div id="questionsContainer"></div>
+
+              <button type="button" class="btn btn-secondary mb-3" onclick="addQuestion()">+ Add Question</button>
+              <br />
+              <button type="submit" class="btn btn-primary">Create Quiz</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- JavaScript to dynamically add questions -->
+    <script>
+      let questionIndex = 0;
+
+      function addQuestion() {
+        const container = document.getElementById("questionsContainer");
+
+        const questionHTML = `
+          <div class="card mb-4 p-3">
+            <h5>Question ${questionIndex + 1}</h5>
+            <div class="mb-3">
+              <label class="form-label">Question Text</label>
+              <input type="text" class="form-control" name="questions[${questionIndex}][text]" required>
+            </div>
+
+            <div class="answers mb-3">
+              <label class="form-label">Answers</label>
+              <input type="text" class="form-control mb-1" name="questions[${questionIndex}][answers][]" placeholder="Answer 1" required>
+              <input type="text" class="form-control mb-1" name="questions[${questionIndex}][answers][]" placeholder="Answer 2" required>
+              <input type="text" class="form-control mb-1" name="questions[${questionIndex}][answers][]" placeholder="Answer 3">
+              <input type="text" class="form-control mb-1" name="questions[${questionIndex}][answers][]" placeholder="Answer 4">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Correct Answer (1 to 4)</label>
+              <select class="form-select" name="questions[${questionIndex}][correctIndex]" required>
+                <option value="">-- Select Correct Answer --</option>
+                <option value="1">Answer 1</option>
+                <option value="2">Answer 2</option>
+                <option value="3">Answer 3</option>
+                <option value="4">Answer 4</option>
+              </select>
+            </div>
+          </div>
+        `;
+
+        container.insertAdjacentHTML("beforeend", questionHTML);
+        questionIndex++;
+      }
+
+      // Add one question by default on page load
+      window.onload = () => addQuestion();
+    </script>
+
+    <%- include("layouts/footer") %>
+    <%- include("layouts/scripts") %>
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("layouts/header") %>
+  <body>
+    <%- include("layouts/navbar") %>
+
+    <!-- Verification Message Modal -->
+    <% if (verifyMessage) { %>
+      <div id="verifyModal" class="modal" style="
+        display: block; 
+        position: fixed; 
+        z-index: 9999; 
+        left: 0; top: 0; width: 100%; height: 100%; 
+        background-color: rgba(0,0,0,0.5);
+      ">
+        <div style="
+          background: white; 
+          margin: 15% auto; 
+          padding: 20px; 
+          max-width: 400px; 
+          border-radius: 8px; 
+          text-align: center;
+        ">
+          <p><%= verifyMessage %></p>
+          <button onclick="document.getElementById('verifyModal').style.display='none'" 
+            class="btn btn-primary">
+            Close
+          </button>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('/img/password.png')">
+      <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="page-heading">
+              <h1>Login to your account</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mb-4">
+      <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+          <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="my-5">
+              <form action="/users/login" method="POST" id="loginForm" novalidate>
+                <!-- Compass Email Field -->
+                <div class="form-floating mb-3">
+                  <input
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    type="text"
+                    placeholder="Compass email address..."
+                    required
+                    pattern="^[^@\s]+@compass\.com$"
+                    title="Email must be a valid Compass email ending with @compass.com"
+                  />
+                  <label for="username">Compass Email Address</label>
+                  <div class="invalid-feedback">
+                    Please enter a valid Compass email address (e.g. name@compass.com).
+                  </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-floating mb-3">
+                  <input
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    required
+                    pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+                    title="Password must be at least 8 characters long and contain both letters and numbers."
+                  />
+                  <label for="password">Password</label>
+                  <div class="invalid-feedback">
+                    Password must be at least 8 characters and contain both letters and numbers.
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button class="btn btn-primary text-uppercase" type="submit">Login</button>
+
+                <!-- Forgot Password Link -->
+                <div class="text-center mt-3">
+                  <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+                </div>
+
+                <!-- Client-side validation script -->
+                <script>
+                  document.getElementById("loginForm").addEventListener("submit", function (e) {
+                    const form = e.target;
+                    if (!form.checkValidity()) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      form.classList.add("was-validated");
+                    }
+                  });
+                </script>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Forgot Password Modal -->
+    <div id="resetModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+      <div style="background:white; margin:15% auto; padding:20px; max-width:400px; border-radius:8px; text-align:center;">
+        <h5>Reset Password</h5>
+        <input type="email" id="resetEmail" class="form-control mt-2" placeholder="Enter your Compass email" required />
+        <div class="text-danger mt-2" id="resetError" style="display:none;"></div>
+        <div class="text-success mt-2" id="resetSuccess" style="display:none;"></div>
+        <button class="btn btn-primary mt-3" id="sendResetBtn">Send Reset Link</button>
+        <button class="btn btn-secondary mt-2" onclick="document.getElementById('resetModal').style.display='none'">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Reset Password JavaScript -->
+    <script>
+      const forgotLink = document.getElementById("forgotPasswordLink");
+      const resetModal = document.getElementById("resetModal");
+      const sendResetBtn = document.getElementById("sendResetBtn");
+      const resetEmail = document.getElementById("resetEmail");
+      const resetSuccess = document.getElementById("resetSuccess");
+      const resetError = document.getElementById("resetError");
+
+      forgotLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        resetModal.style.display = "block";
+      });
+
+      sendResetBtn?.addEventListener("click", async () => {
+        const email = resetEmail.value.trim();
+
+        if (!/^[^@\s]+@compass\.com$/.test(email)) {
+          resetError.style.display = "block";
+          resetError.innerText = "Please enter a valid Compass email (e.g. name@compass.com).";
+          resetSuccess.style.display = "none";
+          return;
+        }
+
+        try {
+          const response = await fetch("/auth/send-reset", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: email }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            resetError.style.display = "none";
+            resetSuccess.innerText = result.message;
+            resetSuccess.style.display = "block";
+
+            forgotLink.textContent = "Reset link sent ✔";
+            forgotLink.style.pointerEvents = "none";
+            forgotLink.classList.add("text-muted");
+          } else {
+            throw new Error(result.message);
+          }
+        } catch (err) {
+          resetSuccess.style.display = "none";
+          resetError.innerText = err.message || "Something went wrong.";
+          resetError.style.display = "block";
+        }
+      });
+    </script>
+
+    <%- include("layouts/footer") %>
+    <%- include("layouts/scripts") %>
+  </body>
+</html>
